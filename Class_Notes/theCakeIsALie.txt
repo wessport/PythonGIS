@@ -1,0 +1,392 @@
+# DIGITAL NOTES
+
+# Python Path
+# C:\Python27\ArcGISx6410.3\python.exe
+
+# 1/19/2017
+# CLASS 1
+
+VISUAL STUDIO
+PYTHON
+OS - translates whatever we want to do. The interface b/w the assembler and the
+hardware
+ASSEMBLER
+HARDWARE
+
+
+Compilled programming language. Closer to the Assembler
+Eg. C++ we write the code then compile it. Then execute it. Debug it.
+
+
+Downsides to python:
+Speed
+GUI
+Matrices
+
+# 1/19/2017
+# CLASS 2
+# SYNTAX
+
+In python we don't have to allocate memory like we do
+in C++
+
+# Built in types: NUMBERS
+- Integers   1
+- Floats     1.0
+- Hexidecimal
+- Complex numbers
+
+In C++ we have to declare the type of the variable
+i.e. INT or FLOAT
+
+In Python we don't have to do that. Python
+understands if we're using a Float or Integer.
+
+SYNTAX
+** == ^ "to the power of"
+
+* Vector - a collection of ordered numbers.
+
+# STRINGS IN PYTHON
+
+*String - an ordered collection of characters.
+
+# ESCAPE CHARACTERS
+\\  Backslash
+\'  Single quotes
+\"  Double quotes
+\t  Horizontal tab
+\v  Vertical tab
+\n  New line
+\u  Unicode
+
+
+Can Cause Problems:
+
+print("C:\tyler\myfile.txt")
+
+Returns: C:
+
+
+# r indicates "raw string" i.e. ignore
+r"C:\tyler\myfile.txt"
+
+Returns: C:\tyler\myfile.txt
+
+print range(1,10,1)
+
+* Parentheses are used in combination with functions.
+
+# LISTS
+
+A = [ 1, "hello", 10.0]
+
+L = [1,2,3,4]
+
+# List of lists
+L = [[0,1], [2,3]]
+
+What data type is K ?
+
+K = L[0]
+
+print K
+Returns: [0,1]
+
+print K[0]
+Returns: 0
+
+L = [1,2,3,4]
+
+# When we want to add to our list
+L = []
+L.append(1)
+L.append(2)
+L.append(3)
+L.append(4)
+
+for i in L:
+  print i
+
+L = [10, 11, 12]
+L[1] = 13
+Returns: L = [10, 13, 12]
+
+# DICTIONARIES
+
+Dictionaries - unordered collection of objects
+
+Items are fetched based on a unique key (identifier)
+
+# Be consistent with your key data types i.e. stings or integers
+# Keys always come before items
+# Remember string can be *misspelled when using string for keys.
+D = {'span':3, 'eggs':2}
+
+A = D.keys()
+print A
+Returns: [span, eggs] #The out put is a *List
+
+# Iterates through keys and then returns the key values
+for i in D:
+  print D[i]
+
+
+D = {}
+D.update({1:'fiat'})
+D
+Returns: {1:'fiat'}
+
+# CLASS 3
+
+Object - a user created data type
+
+Assignments create object references
+
+Varaible names must start with a letter or underscore
+
+Call an item within an object.(whatever you're looking for)
+
+
++= adds another value with the variable's value and assigns the new value to the variable.
+
+>>> x = 3
+>>> x += 2
+>>> print x
+    5
+
+Flow control - pathing where your code goes
+
+import random as rd
+
+D1 = rd.randint(0,6)
+D2 = rd.randint(0,6)
+
+if (D1==6):
+    print "D1 is six"
+
+if(D2==6):
+    print "D2 is six"
+
+# If statements / Workflow controls
+if, elif, else
+
+
+# WHILE
+
+Most dangerous workflow statement
+
+A = 1
+count = 1
+while (A):
+    print 'counting', count
+    if (count > 10):
+        A = 0
+    count += 1
+
+Break - get out of the lopp
+Continue - goes back to the top of the loop from where you put continue
+
+
+D1 = 3
+A = 1
+while (A==1):
+    print 'An unfortunate event has occured.'
+    D1  = D1 +1
+    if (D1 > 10):
+        A = 2
+        print "Now A = 2"
+else:
+    print 'This is the end of a series of unfortunate events.'
+
+# FOR statements
+
+A = range(10)
+
+for item in A:
+    print item + 100
+
+
+
+# INDEXING
+
+L1 = [10,13,24]
+L2 = [20,23,34]
+index = [0,1,2]
+
+for i in index:
+    print L1[i], L2[i]
+
+L1 = [10,13,24]
+L2 = [20,23,34]
+
+for i in L1, L2:
+    print L1[i], L2[i]
+
+    L1 = [10,13,24]
+    L2 = [20,23,34]
+
+for i in range(3):
+    print L1[i], L2[i]
+
+
+HM_List = [34,27,40,12,77,63,52,20]
+
+for i in range(8):
+  if (HM_List[i] == 40):
+    print "40 is in the position" + str(i+1)
+    break
+  print i
+
+
+V = [21,18,30,22,18,25,30,25,20,25,16]
+V_size = len(V)
+
+s = 0
+
+for i in range(V_size):
+    print s
+    s = s + V[i]
+
+average_age = s / V_size
+
+print "The average age of our class is: " + str(average_age)
+
+
+
+
+# CLASS 4 NOTES
+
+# WRITING DATA TO A TEXT file
+
+import random as rd
+
+inFile = open('pointsFile.txt', 'w')
+
+pts_x = []
+pts_y = []
+pts_z = []
+pts_n = 1000
+for i in range (pts_n):
+    x = 1000.00 * rd.random()
+    y = 1000.00 * rd.random()
+    z = 1000.00 * rd.random()
+    pts_x.append(float(x))
+    pts_y.append(float(y))
+    pts_z.append(float(z))
+
+# Write points 1 - 1000 for X,Y,Z to a csv text file
+for i in range(0,1000,1):
+    inFile.write(str(pts_x[i])+ "," + str(pts_y[i])+ "," + str(pts_z[i])+ "\n")
+
+inFile.close()
+
+
+
+
+
+# CLASS 5 notes
+
+# FUNCTIONS
+
+def myFunction(e1,e2):
+    result = e1 + e2
+    return(result)
+
+a = myFunction(5,2)
+
+print(a)
+
+
+def myList(e1):
+    nlist = []
+    for i in e1:
+        nlist.append(i + 1)
+    return(nlist)
+
+l = [1,2,3]
+
+ans = myList(l)
+
+print(ans)
+
+def addIndividual(n1,n2):
+    return n1+1,n2+1
+
+x = addIndividual(10,11)
+
+print(x)
+
+
+
+
+# REVIEW
+
+def myFunction(eFile,nFile,offset):
+    inFile = open(eFile, 'r')
+
+    x_list=[]
+    y_list=[]
+    z_list=[]
+    for line in inFile:
+        strFromFile = line.strip() # Remove line breaks
+        parsedList = strFromFile.split(' ') # Returns a list of strings
+        x_list.append(float(parsedList[0]))
+        y_list.append(float(parsedList[1]))
+        z_list.append(float(parsedList[2]))
+
+    inFile.close()
+
+    z_new = []
+
+    for i in z_list:
+        z_new.append(i + offset)
+
+    #Writing the new file
+    outFile = open(nFile,'w')
+
+
+    for i in range(1000):
+        line =(str(x_list[i]) + ',' + str(y_list[i]) + ',' + str(z_new[i]) +'\n') # Don't need comma on the end. Line break works as a delimeter
+        outFile.write(line)
+
+    outFile.close()
+
+eFile = 'raw_pts.xyz'
+nFile = 'mod_pts.xyz'
+offset = 2.00
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.
