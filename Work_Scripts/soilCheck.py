@@ -14,19 +14,22 @@ arcpy.env.workspace = ws
 
 # Disable: 'Add results of geoprocessing operations to the display'
 # Annoying otherwise
-arcpy.env.addOutputsToMap = 0
+arcpy.env.addOutputsToMap = 1
 
 # Problem cells
 in_file = open(ws + '/problemCells.csv','r')
 
+cells = []
 for i in in_file:
     strFromFile = i.strip() # Remove line breaks
-    cells = strFromFile.split(',') # Returns a list of strings
+    parsedList = strFromFile.split(',') # Returns a list of strings
+    cells.append(int(parsedList[0]))
+in_file.close()
 
 bad_soils = ['BP','LV','MR','W'] # Borrow pit, Levee, Marsh, Water
 
 # Make a layer from the feature class
-arcpy.MakeFeatureLayer_management("ms_agnps_Watercells_64.shp", "cells_lyr")
+arcpy.MakeFeatureLayer_management("annagnps_subwta_cells_64_feb7.shp", "cells_lyr")
 
 # List of cells and majority soil ID
 cellSoil = []
@@ -35,44 +38,63 @@ cellSoil = []
 
 # INTERSECT ANALYSIS
 
-for i in cells:
+#for i in cells:
 
-    # Select individual cells
-    cell = i
+# Select individual cells
+cell = 582
 
-    in_layer_or_view = "cells_lyr"
-    selection_type="NEW_SELECTION"
-    where_clause=""""GRIDCODE" = {}""".format(cell)
+in_layer_or_view = "cells_lyr"
+selection_type="NEW_SELECTION"
+where_clause=""""GRIDCODE" = {}""".format(cell)
 
-    arcpy.SelectLayerByAttribute_management(in_layer_or_view, selection_type, where_clause)
+arcpy.SelectLayerByAttribute_management(in_layer_or_view, selection_type, where_clause)
 
-    # Perform intersect
-    in_features="cells_lyr #;soil_merge.shp #"
-    out_feature_class= ws + "/Intersect{}.shp".format(cell)
-    join_attributes="ALL"
-    cluster_tolerance="-1 Unknown"
-    output_type="INPUT"
+# Perform intersect
+in_features="cells_lyr #;soil_merge.shp #"
+out_feature_class= ws + "/Intersect{}.shp".format(cell)
+join_attributes="ALL"
+cluster_tolerance="-1 Unknown"
+output_type="INPUT"
 
-    arcpy.Intersect_analysis(in_features, out_feature_class, join_attributes, cluster_tolerance, output_type)
+arcpy.Intersect_analysis(in_features, out_feature_class, join_attributes, cluster_tolerance, output_type)
 
-    # Clear selected layer
-    arcpy.SelectLayerByAttribute_management("cells_lyr", "CLEAR_SELECTION")
+# Calculate add area for each soil type
+arcpy.AddField_management(out_feature_class,'AREA','DOUBLE','10','5')
 
-    # Create search cursor
-    SC = arcpy.da.SearchCursor(ws +'/Intersect{}.shp'.format(cell),['SHAPE@AREA','GRIDCODE','MUSYM'])
+# Create our Update cursor to fill area data into attribute table
+UC = arcpy.da.UpdateCursor(out_feature_class,['SHAPE@AREA','AREA'])
 
-    a = -1
-    for row in SC:
-        if (row[0] > a) and (row[2] not in bad_soils):
-            majSoil = row[2]
-            a = row[0]
-        gc = row[1]
-    del SC
+for row in UC:
+    row[1] = row[0]
+    UC.updateRow(row)
+del UC
 
-    cellSoil.append(str(gc) + ',' + majSoil + '\n')
+# Clear selected layer
+arcpy.SelectLayerByAttribute_management("cells_lyr", "CLEAR_SELECTION")
 
-    # Delete intermediate intersect files to save storage
-    arcpy.Delete_management(ws + "/Intersect{}.shp".format(cell), data_type="")
+# Calculate sum of area for each soil type in selected cell
+in_table= ws +"/Intersect{}.shp".format(cell)
+out_table= ws + "/Intersect{}_Stats".format(cell)
+statistics_fields="AREA SUM"
+case_field="MUSYM"
+arcpy.Statistics_analysis(in_table, out_table, statistics_fields, case_field)
+
+# Create search cursor
+table_loc = ws + "/Intersect{}_Stats".format(cell)
+SC = arcpy.da.SearchCursor(table_loc,['MUSYM','SUM_AREA'])
+
+a = -1
+for row in SC:
+    if (row[1] > a) and (row[0] not in bad_soils):
+        majSoil = row[0]
+        a = row[1]
+del SC
+
+cellSoil.append(str(cell) + ',' + majSoil + '\n')
+
+# Delete intermediate intersect files to save storage
+arcpy.Delete_management(ws + "/Intersect{}.shp".format(cell), data_type="")
+arcpy.Delete_management(ws + "/Intersect{}_Stats.shp".format(cell), data_type="")
 
 # Delete any leftover temporary files
 arcpy.Delete_management("cells_lyr", data_type="")
