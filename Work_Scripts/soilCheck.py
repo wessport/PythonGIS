@@ -17,7 +17,11 @@ arcpy.env.workspace = ws
 arcpy.env.addOutputsToMap = 0
 
 # Problem cells
-cells = [51,82,83,91,92,93,101,102,103,1142,1152,1153,1301,1693,1791,1793,5942,10993,11003,11022,11873,11882,13253,13283,13301,13302,13303,13311,13312,13313,13381,13382,16023]
+in_file = open(ws + '/problemCells.csv','r')
+
+for i in in_file:
+    strFromFile = i.strip() # Remove line breaks
+    cells = strFromFile.split(',') # Returns a list of strings
 
 bad_soils = ['BP','LV','MR','W'] # Borrow pit, Levee, Marsh, Water
 
