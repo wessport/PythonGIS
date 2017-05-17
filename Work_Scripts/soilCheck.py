@@ -38,63 +38,63 @@ cellSoil = []
 
 # INTERSECT ANALYSIS
 
-#for i in cells:
+for i in cells:
 
-# Select individual cells
-cell = 582
+    # Select individual cells
+    cell = i
 
-in_layer_or_view = "cells_lyr"
-selection_type="NEW_SELECTION"
-where_clause=""""GRIDCODE" = {}""".format(cell)
+    in_layer_or_view = "cells_lyr"
+    selection_type="NEW_SELECTION"
+    where_clause=""""GRIDCODE" = {}""".format(cell)
 
-arcpy.SelectLayerByAttribute_management(in_layer_or_view, selection_type, where_clause)
+    arcpy.SelectLayerByAttribute_management(in_layer_or_view, selection_type, where_clause)
 
-# Perform intersect
-in_features="cells_lyr #;soil_merge.shp #"
-out_feature_class= ws + "/Intersect{}.shp".format(cell)
-join_attributes="ALL"
-cluster_tolerance="-1 Unknown"
-output_type="INPUT"
+    # Perform intersect
+    in_features="cells_lyr #;soil_merge.shp #"
+    out_feature_class= ws + "/Intersect{}.shp".format(cell)
+    join_attributes="ALL"
+    cluster_tolerance="-1 Unknown"
+    output_type="INPUT"
 
-arcpy.Intersect_analysis(in_features, out_feature_class, join_attributes, cluster_tolerance, output_type)
+    arcpy.Intersect_analysis(in_features, out_feature_class, join_attributes, cluster_tolerance, output_type)
 
-# Calculate add area for each soil type
-arcpy.AddField_management(out_feature_class,'AREA','DOUBLE','10','5')
+    # Calculate add area for each soil type
+    arcpy.AddField_management(out_feature_class,'AREA','DOUBLE','10','5')
 
-# Create our Update cursor to fill area data into attribute table
-UC = arcpy.da.UpdateCursor(out_feature_class,['SHAPE@AREA','AREA'])
+    # Create our Update cursor to fill area data into attribute table
+    UC = arcpy.da.UpdateCursor(out_feature_class,['SHAPE@AREA','AREA'])
 
-for row in UC:
-    row[1] = row[0]
-    UC.updateRow(row)
-del UC
+    for row in UC:
+        row[1] = row[0]
+        UC.updateRow(row)
+    del UC
 
-# Clear selected layer
-arcpy.SelectLayerByAttribute_management("cells_lyr", "CLEAR_SELECTION")
+    # Clear selected layer
+    arcpy.SelectLayerByAttribute_management("cells_lyr", "CLEAR_SELECTION")
 
-# Calculate sum of area for each soil type in selected cell
-in_table= ws +"/Intersect{}.shp".format(cell)
-out_table= ws + "/Intersect{}_Stats".format(cell)
-statistics_fields="AREA SUM"
-case_field="MUSYM"
-arcpy.Statistics_analysis(in_table, out_table, statistics_fields, case_field)
+    # Calculate sum of area for each soil type in selected cell
+    in_table= ws +"/Intersect{}.shp".format(cell)
+    out_table= ws + "/Intersect{}_Stats".format(cell)
+    statistics_fields="AREA SUM"
+    case_field="MUSYM"
+    arcpy.Statistics_analysis(in_table, out_table, statistics_fields, case_field)
 
-# Create search cursor
-table_loc = ws + "/Intersect{}_Stats".format(cell)
-SC = arcpy.da.SearchCursor(table_loc,['MUSYM','SUM_AREA'])
+    # Create search cursor
+    table_loc = ws + "/Intersect{}_Stats".format(cell)
+    SC = arcpy.da.SearchCursor(table_loc,['MUSYM','SUM_AREA'])
 
-a = -1
-for row in SC:
-    if (row[1] > a) and (row[0] not in bad_soils):
-        majSoil = row[0]
-        a = row[1]
-del SC
+    a = -1
+    for row in SC:
+        if (row[1] > a) and (row[0] not in bad_soils):
+            majSoil = row[0]
+            a = row[1]
+    del SC
 
-cellSoil.append(str(cell) + ',' + majSoil + '\n')
+    cellSoil.append(str(cell) + ',' + majSoil + '\n')
 
-# Delete intermediate intersect files to save storage
-arcpy.Delete_management(ws + "/Intersect{}.shp".format(cell), data_type="")
-arcpy.Delete_management(ws + "/Intersect{}_Stats.shp".format(cell), data_type="")
+    # Delete intermediate intersect files to save storage
+    arcpy.Delete_management(ws + "/Intersect{}.shp".format(cell), data_type="")
+    arcpy.Delete_management(ws + "/Intersect{}_Stats.shp".format(cell), data_type="")
 
 # Delete any leftover temporary files
 arcpy.Delete_management("cells_lyr", data_type="")
