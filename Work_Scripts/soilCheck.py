@@ -74,13 +74,13 @@ for i in cells:
 
     # Calculate sum of area for each soil type in selected cell
     in_table= ws +"/Intersect{}.shp".format(cell)
-    out_table= ws + "/Intersect{}_Stats".format(cell)
+    out_table= ws + "/intersect{}_stats".format(cell)
     statistics_fields="AREA SUM"
     case_field="MUSYM"
     arcpy.Statistics_analysis(in_table, out_table, statistics_fields, case_field)
 
     # Create search cursor
-    table_loc = ws + "/Intersect{}_Stats".format(cell)
+    table_loc = ws + "/intersect{}_stats".format(cell)
     SC = arcpy.da.SearchCursor(table_loc,['MUSYM','SUM_AREA'])
 
     a = -1
