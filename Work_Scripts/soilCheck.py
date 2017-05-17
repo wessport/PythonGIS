@@ -14,19 +14,22 @@ arcpy.env.workspace = ws
 
 # Disable: 'Add results of geoprocessing operations to the display'
 # Annoying otherwise
-arcpy.env.addOutputsToMap = 0
+arcpy.env.addOutputsToMap = 1
 
 # Problem cells
 in_file = open(ws + '/problemCells.csv','r')
 
+cells = []
 for i in in_file:
     strFromFile = i.strip() # Remove line breaks
-    cells = strFromFile.split(',') # Returns a list of strings
+    parsedList = strFromFile.split(',') # Returns a list of strings
+    cells.append(int(parsedList[0]))
+in_file.close()
 
 bad_soils = ['BP','LV','MR','W'] # Borrow pit, Levee, Marsh, Water
 
 # Make a layer from the feature class
-arcpy.MakeFeatureLayer_management("ms_agnps_Watercells_64.shp", "cells_lyr")
+arcpy.MakeFeatureLayer_management("annagnps_subwta_cells_64_feb7.shp", "cells_lyr")
 
 # List of cells and majority soil ID
 cellSoil = []
@@ -55,24 +58,43 @@ for i in cells:
 
     arcpy.Intersect_analysis(in_features, out_feature_class, join_attributes, cluster_tolerance, output_type)
 
+    # Calculate add area for each soil type
+    arcpy.AddField_management(out_feature_class,'AREA','DOUBLE','10','5')
+
+    # Create our Update cursor to fill area data into attribute table
+    UC = arcpy.da.UpdateCursor(out_feature_class,['SHAPE@AREA','AREA'])
+
+    for row in UC:
+        row[1] = row[0]
+        UC.updateRow(row)
+    del UC
+
     # Clear selected layer
     arcpy.SelectLayerByAttribute_management("cells_lyr", "CLEAR_SELECTION")
 
+    # Calculate sum of area for each soil type in selected cell
+    in_table= ws +"/Intersect{}.shp".format(cell)
+    out_table= ws + "/Intersect{}_Stats".format(cell)
+    statistics_fields="AREA SUM"
+    case_field="MUSYM"
+    arcpy.Statistics_analysis(in_table, out_table, statistics_fields, case_field)
+
     # Create search cursor
-    SC = arcpy.da.SearchCursor(ws +'/Intersect{}.shp'.format(cell),['SHAPE@AREA','GRIDCODE','MUSYM'])
+    table_loc = ws + "/Intersect{}_Stats".format(cell)
+    SC = arcpy.da.SearchCursor(table_loc,['MUSYM','SUM_AREA'])
 
     a = -1
     for row in SC:
-        if (row[0] > a) and (row[2] not in bad_soils):
-            majSoil = row[2]
-            a = row[0]
-        gc = row[1]
+        if (row[1] > a) and (row[0] not in bad_soils):
+            majSoil = row[0]
+            a = row[1]
     del SC
 
-    cellSoil.append(str(gc) + ',' + majSoil + '\n')
+    cellSoil.append(str(cell) + ',' + majSoil + '\n')
 
     # Delete intermediate intersect files to save storage
     arcpy.Delete_management(ws + "/Intersect{}.shp".format(cell), data_type="")
+    arcpy.Delete_management(ws + "/Intersect{}_Stats.shp".format(cell), data_type="")
 
 # Delete any leftover temporary files
 arcpy.Delete_management("cells_lyr", data_type="")
