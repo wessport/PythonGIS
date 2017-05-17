@@ -9,12 +9,16 @@
 import arcpy
 
 # Define arcpy workspace
-ws = "C:/Users/wsp2sgis/Desktop/Soil_Check"
+ws = "D:/Wes/Work/USDA/raw/Scripts/soil_check"
+
+# Cell shapefile path
+c = "D:/Wes/Work/USDA/raw/Scripts/soil_check/ms_annagnps_cells_64_may17.shp"
+
 arcpy.env.workspace = ws
 
 # Disable: 'Add results of geoprocessing operations to the display'
 # Annoying otherwise
-arcpy.env.addOutputsToMap = 1
+arcpy.env.addOutputsToMap = 0
 
 # Problem cells
 in_file = open(ws + '/problemCells.csv','r')
@@ -29,7 +33,7 @@ in_file.close()
 bad_soils = ['BP','LV','MR','W'] # Borrow pit, Levee, Marsh, Water
 
 # Make a layer from the feature class
-arcpy.MakeFeatureLayer_management("annagnps_subwta_cells_64_feb7.shp", "cells_lyr")
+arcpy.MakeFeatureLayer_management(c, "cells_lyr")
 
 # List of cells and majority soil ID
 cellSoil = []
@@ -47,7 +51,8 @@ for i in cells:
     selection_type="NEW_SELECTION"
     where_clause=""""GRIDCODE" = {}""".format(cell)
 
-    arcpy.SelectLayerByAttribute_management(in_layer_or_view, selection_type, where_clause)
+    arcpy.SelectLayerByAttribute_management(in_layer_or_view, selection_type,
+                                            where_clause)
 
     # Perform intersect
     in_features="cells_lyr #;soil_merge.shp #"
@@ -56,7 +61,8 @@ for i in cells:
     cluster_tolerance="-1 Unknown"
     output_type="INPUT"
 
-    arcpy.Intersect_analysis(in_features, out_feature_class, join_attributes, cluster_tolerance, output_type)
+    arcpy.Intersect_analysis(in_features, out_feature_class, join_attributes,
+                             cluster_tolerance, output_type)
 
     # Calculate add area for each soil type
     arcpy.AddField_management(out_feature_class,'AREA','DOUBLE','10','5')
@@ -77,7 +83,8 @@ for i in cells:
     out_table= ws + "/intersect{}_stats".format(cell)
     statistics_fields="AREA SUM"
     case_field="MUSYM"
-    arcpy.Statistics_analysis(in_table, out_table, statistics_fields, case_field)
+    arcpy.Statistics_analysis(in_table, out_table, statistics_fields,
+                              case_field)
 
     # Create search cursor
     table_loc = ws + "/intersect{}_stats".format(cell)
@@ -94,7 +101,8 @@ for i in cells:
 
     # Delete intermediate intersect files to save storage
     arcpy.Delete_management(ws + "/Intersect{}.shp".format(cell), data_type="")
-    arcpy.Delete_management(ws + "/Intersect{}_Stats.shp".format(cell), data_type="")
+    arcpy.Delete_management(ws + "/intersect{}_stats".format(cell),
+                            data_type="")
 
 # Delete any leftover temporary files
 arcpy.Delete_management("cells_lyr", data_type="")
