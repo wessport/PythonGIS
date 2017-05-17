@@ -12,6 +12,10 @@ import arcpy
 ws = "C:/Users/wsp2sgis/Desktop/Soil_Check"
 arcpy.env.workspace = ws
 
+# Disable: 'Add results of geoprocessing operations to the display'
+# Annoying otherwise
+arcpy.env.addOutputsToMap = 0
+
 # Problem cells
 cells = [51,82,83,91,92,93,101,102,103,1142,1152,1153,1301,1693,1791,1793,5942,10993,11003,11022,11873,11882,13253,13283,13301,13302,13303,13311,13312,13313,13381,13382,16023]
 
@@ -68,6 +72,10 @@ for i in cells:
 
 # Delete any leftover temporary files
 arcpy.Delete_management("cells_lyr", data_type="")
+
+################################################################################
+
+#  WRITE RESULTS  TO CSV
 
 # Write results to a csv
 out_file = open((ws + "/Cell_correctedSoilID.csv"),'w')
