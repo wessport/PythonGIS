@@ -27,40 +27,57 @@ cellSoil = []
 
 # INTERSECT ANALYSIS
 
-# Select individual cells
-cell = 51
+for i in cells:
 
-in_layer_or_view = "cells_lyr"
-selection_type="NEW_SELECTION"
-where_clause=""""GRIDCODE" = {}""".format(cell)
+    # Select individual cells
+    cell = i
 
-arcpy.SelectLayerByAttribute_management(in_layer_or_view, selection_type, where_clause)
+    in_layer_or_view = "cells_lyr"
+    selection_type="NEW_SELECTION"
+    where_clause=""""GRIDCODE" = {}""".format(cell)
 
-# Perform intersect
-in_features="cells_lyr #;soil_merge.shp #"
-out_feature_class= ws + "/Intersect{}.shp".format(cell)
-join_attributes="ALL"
-cluster_tolerance="-1 Unknown"
-output_type="INPUT"
+    arcpy.SelectLayerByAttribute_management(in_layer_or_view, selection_type, where_clause)
 
-arcpy.Intersect_analysis(in_features, out_feature_class, join_attributes, cluster_tolerance, output_type)
+    # Perform intersect
+    in_features="cells_lyr #;soil_merge.shp #"
+    out_feature_class= ws + "/Intersect{}.shp".format(cell)
+    join_attributes="ALL"
+    cluster_tolerance="-1 Unknown"
+    output_type="INPUT"
 
-# Clear selected layer
-arcpy.SelectLayerByAttribute_management("cells_lyr", "CLEAR_SELECTION")
+    arcpy.Intersect_analysis(in_features, out_feature_class, join_attributes, cluster_tolerance, output_type)
 
-# Create search cursor
-SC = arcpy.da.SearchCursor(ws +'/Intersect{}.shp'.format(cell),['SHAPE@AREA','GRIDCODE','MUSYM'])
+    # Clear selected layer
+    arcpy.SelectLayerByAttribute_management("cells_lyr", "CLEAR_SELECTION")
 
-a = -1
-for row in SC:
-    if (row[0] > a) and (row[2] not in bad_soils):
-        majSoil = row[2]
-        a = row[0]
-    gc = row[1]
-del SC
+    # Create search cursor
+    SC = arcpy.da.SearchCursor(ws +'/Intersect{}.shp'.format(cell),['SHAPE@AREA','GRIDCODE','MUSYM'])
 
-cellSoil.append(str(gc) + ',' + majSoil + ',' + '\n')
+    a = -1
+    for row in SC:
+        if (row[0] > a) and (row[2] not in bad_soils):
+            majSoil = row[2]
+            a = row[0]
+        gc = row[1]
+    del SC
 
-print(cellSoil)
+    cellSoil.append(str(gc) + ',' + majSoil + '\n')
 
-# arcpy.Delete_management("cells_lyr", data_type="")
+    # Delete intermediate intersect files to save storage
+    arcpy.Delete_management(ws + "/Intersect{}.shp".format(cell), data_type="")
+
+# Delete any leftover temporary files
+arcpy.Delete_management("cells_lyr", data_type="")
+
+# Write results to a csv
+out_file = open((ws + "/Cell_correctedSoilID.csv"),'w')
+
+Header = 'Cell_ID,Soil_ID,' +'\n'
+out_file.write(Header)
+
+for i in cellSoil:
+    out_file.write(i)
+
+out_file.close()
+
+# FINI
