@@ -1,0 +1,14 @@
+# WES PORTER
+# 5/31/2017
+# USDA PROJECT - Raster Calculator
+
+# SUMMARY:
+# Scartch paper for arguments passed to the raster calculator for
+# future reference.
+
+# Create a new raster where if the raster values are in the supplied list,
+# They are set to '1' and everything else is NoData
+OutRas = Con(InList("YMD_Irrigation2002_clip.tif",[1,2,3,5]), 1, -9999)
+
+# If the raster cell has a NoData value, it is assigned -9999
+Con(IsNull("rastercalc4"),-9999,"rastercalc4")
