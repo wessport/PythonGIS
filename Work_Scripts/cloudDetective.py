@@ -7,22 +7,31 @@
 
 # C:\Python27\ArcGISx6410.3\python.exe cloudDetective.py
 import arcpy
-from arcpy.sa import *
-# Define arcpy workspace
-ws = r"E:\Wes\Work\USDA\raw\Scripts\cloud_detect"
-
-# Specify the input & output raster
-inRaster = ws + "/LT50300282000357.B3.tif"
-outRaster = ws + "/LT50300282000_357_05.tif"
-
-# Assign cloud pixel threshold
-cloudThresh = -0.05
+from os import listdir
+from os.path import isfile, join
 
 # Check out the Spatial Analyst extension
 arcpy.CheckOutExtension("Spatial")
 
-arcpy.gp.RasterCalculator_sa("""Con("{}">{},"{}",-1)""".format(inRaster,cloudThresh,inRaster), "{}".format(outRaster))
+# Define arcpy workspace
+ws = "E:/Wes/Work/USDA/raw/North_Dakota/ND_Cloud_Detect/NDVI_LT5_2000/proj"
+outLoc = "E:/Wes/Work/USDA/raw/North_Dakota/ND_Cloud_Detect/NDVI_LT5_2000/filtered/"
 
+# Create a list of raster file names
+files = [f for f in listdir(ws) if isfile(join(ws, f))]
+
+# Assign cloud pixel threshold
+cloudThresh = -0.05
+
+# Raster calc to filter clouds from NDVI
+for i in files:
+    # Specify the input & output raster
+    inRaster = ws + "/{}.tif".format(i)
+    outRaster = outLoc + i[:-12] +"_con.tif"
+
+    # Raster Calculator
+    arcpy.gp.RasterCalculator_sa("""Con("{}">{},"{}",-1)""".format(inRaster,cloudThresh,inRaster), "{}".format(outRaster))
+    print("\n Raster Calculation for: " + i + " - Complete. \n")
 
 # Check in the Spatial Analyst extension now that you're done
 arcpy.CheckInExtension("Spatial")
