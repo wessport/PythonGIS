@@ -43,22 +43,22 @@ for name in files:
 
     spry.append(name[0:13])
 
-myset = set(spry)
-setList = list(myset)
+sprySet = set(spry)
+setList = list(sprySet)
 
-myList = []
+spryList = []
 
+# Create separate lits for each unique Landsat row in collection
 for i in setList:
     fileList = []
     for name in files:
         if (i in name):
             fileList.append(name)
-    myList.append(fileList)
+    spryList.append(fileList)
 
-for i in myList[0]:
-    for j in myList[1]:
+for i in spryList[0]:
+    for j in spryList[1]:
         doyI = i[13:16]
         doyJ = j[13:16]
         if (doyI == doyJ):
             out_string = "gdalwarp -t_srs EPSG:26916 " + str(i) + " " + str(j) + " " + str(i[0:6]) + str(i[9:16])+ "mosaic.tif"
-            #print(out_string)
