@@ -9,7 +9,7 @@
 
 ws = "E:/Wes/Work/USDA/tmp/"
 
-in_file = open(ws +"ndvi.txt",'r')
+in_file = open(ws +"ndvi_test2.txt",'r')
 files = []
 for line in in_file:
     strFromFile = line.strip() # Remove line breaks
@@ -21,6 +21,7 @@ obs_paths = []
 obs_rows = []
 obs_years = []
 obs_doys = []
+spry = []
 
 for name in files:
     sensor = name[0:3]
@@ -40,11 +41,24 @@ for name in files:
     if (doy not in obs_doys):
         obs_doys.append(doy)
 
-a = "LC80230362015"
+    spry.append(name[0:13])
+
+myset = set(spry)
+setList = list(myset)
+
 myList = []
 
-for name in files:
-    if (a in name):
-        myList.append(name)
+for i in setList:
+    fileList = []
+    for name in files:
+        if (i in name):
+            fileList.append(name)
+    myList.append(fileList)
 
-print(myList)
+for i in myList[0]:
+    for j in myList[1]:
+        doyI = i[13:16]
+        doyJ = j[13:16]
+        if (doyI == doyJ):
+            out_string = "gdalwarp -t_srs EPSG:26916 " + str(i) + " " + str(j) + " " + str(i[0:6]) + str(i[9:16])+ "mosaic.tif"
+            #print(out_string)
