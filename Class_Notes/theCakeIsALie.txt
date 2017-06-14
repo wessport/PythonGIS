@@ -14,7 +14,7 @@ ASSEMBLER
 HARDWARE
 
 
-Compilled programming language. Closer to the Assembler
+Compiled programming language. Closer to the Assembler
 Eg. C++ we write the code then compile it. Then execute it. Debug it.
 
 

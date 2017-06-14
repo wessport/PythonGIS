@@ -16,7 +16,7 @@ arcpy.CheckOutExtension("Spatial")
 # Define arcpy workspace
 ws = "E:/Wes/Work/USDA/raw/North_Dakota/ND_Cloud_Detect/NDVI_LT5_2000/proj"
 outLoc = "E:/Wes/Work/USDA/raw/North_Dakota/ND_Cloud_Detect/NDVI_LT5_2000/filtered/"
-
+ Wes Porter
 # Create a list of raster file names
 files = [f for f in listdir(ws) if isfile(join(ws, f))]
 
