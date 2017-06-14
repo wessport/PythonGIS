@@ -90,4 +90,4 @@ for i in spryList:
 
 outFile.close()
 
-print("FINI\n")
+print("\n ~~~FINI~~~ \n")
