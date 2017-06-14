@@ -9,7 +9,7 @@
 
 ws = "E:/Wes/Work/USDA/tmp/"
 
-in_file = open(ws +"ndvi.txt",'r')
+in_file = open(ws +"ndvi_combined.txt",'r')
 files = []
 for line in in_file:
     strFromFile = line.strip() # Remove line breaks
@@ -47,6 +47,8 @@ for name in files:
 sprySet = set(spry)
 sprySet = sorted(sprySet)
 spryList = list(sprySet)
+
+print(spryList)
 
 rowGroups = []
 # Create separate lits for each unique Landsat row in collection
@@ -87,7 +89,8 @@ for i in spryList:
                     if (doyI == doyJ):
                         out_string = "gdalwarp -t_srs EPSG:26916 " + str(i) + " " + str(j) + " " + str(i[0:6]) + str(i[9:16])+ "_msc.tif" + "\n"
                         outFile.write(out_string)
-
+footer = "echo Execution complete.\nPause"
+outFile.write(footer)
 outFile.close()
 
 print("\n ~~~FINI~~~ \n")
