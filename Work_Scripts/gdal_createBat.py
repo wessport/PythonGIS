@@ -15,51 +15,7 @@ for line in in_file:
     strFromFile = line.strip() # Remove line breaks
     files.append(strFromFile)
 
-# Landsat rows that appear in file list
-obs_sensors = []
-obs_paths = []
-obs_rows = []
-obs_years = []
-obs_doys = []
-spry = []
-
-for name in files:
-    sensor = name[0:3]
-    if (sensor not in obs_sensors):
-        obs_sensors.append(sensor)
-    path = name[3:6]
-    if (path not in obs_paths):
-        obs_paths.append(path)
-    row = name[6:9]
-    if (row not in obs_rows):
-        obs_rows.append(row)
-    year = name[9:13]
-    if (year not in obs_years):
-        obs_years.append(year)
-        year = name[9:13]
-    doy = name[13:16]
-    if (doy not in obs_doys):
-        obs_doys.append(doy)
-
-    spry.append(name[0:13])
-
-# Grab unique spry combinations
-sprySet = set(spry)
-sprySet = sorted(sprySet)
-spryList = list(sprySet)
-
-print(spryList)
-
-rowGroups = []
-# Create separate lits for each unique Landsat row in collection
-for i in spryList:
-    fileList = []
-    for name in files:
-        if (i in name):
-            fileList.append(name)
-    rowGroups.append(fileList)
-
-# Create text file to send formatted string to.
+# Create text file to send formatted string to
 outFile = open(ws + "MS_gdal_mosaic.txt",'w')
 
 # Write header info
@@ -72,23 +28,23 @@ l6 = "title GDAL NDVI MOSAIC\n"
 header = l1+l2+l3+l4+l5+l6
 outFile.write(header)
 
-for i in spryList:
-    for j in spryList:
+gdal = "C:/OSGeo4W64/bin/gdalwarp.exe" # GDAL location
+proj = '"+proj=utm +zone=16 +datum=NAD83"' # Projection
+
+for i in files:
+    for j in files:
         spI = i[0:6]
         rowI = i[6:9]
         yI = i[9:13]
+        doyI = i[13:16]
         spJ = j[0:6]
         rowJ = j[6:9]
         yJ = j[9:13]
-        if (spI == spJ and yI == yJ and int(rowI) == (int(rowJ)-1)):
-            # Format GDAL arguments for *possible mosaic combinations.
-            for i in rowGroups[0]:
-                for j in rowGroups[1]:
-                    doyI = i[13:16]
-                    doyJ = j[13:16]
-                    if (doyI == doyJ):
-                        out_string = "gdalwarp -t_srs EPSG:26916 " + str(i) + " " + str(j) + " " + str(i[0:6]) + str(i[9:16])+ "_msc.tif" + "\n"
-                        outFile.write(out_string)
+        doyJ = j[13:16]
+        if (spI == spJ and yI == yJ and int(rowI) == (int(rowJ)-1) and doyI == doyJ):
+            out_string = gdal + " -t_srs " + proj + " " + str(i) + " " + str(j) + " " + str(i[0:6]) + str(i[9:16]) + "_msc.tif" + "\n"
+            outFile.write(out_string)
+
 footer = "echo Execution complete.\nPause"
 outFile.write(footer)
 outFile.close()
