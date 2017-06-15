@@ -9,14 +9,14 @@
 
 ws = "E:/Wes/Work/USDA/tmp/"
 
-in_file = open(ws +"ndvi_combined.txt",'r')
+in_file = open(ws + "ndvi_combined.txt", 'r')
 files = []
 for line in in_file:
-    strFromFile = line.strip() # Remove line breaks
+    strFromFile = line.strip()  # Remove line breaks
     files.append(strFromFile)
 
 # Create text file to send formatted string to
-outFile = open(ws + "MS_gdal_mosaic.txt",'w')
+outFile = open(ws + "MS_gdal_mosaic.txt", 'w')
 
 # Write header info
 l1 = ":: WES PORTER\n"
@@ -25,11 +25,11 @@ l3 = ":: USDA PROJECT\n"
 l4 = ":: Summary: Working with GDAL to reproject and mosaic NDVI data.\n"
 l5 = "echo off\n"
 l6 = "title GDAL NDVI MOSAIC\n"
-header = l1+l2+l3+l4+l5+l6
+header = l1 + l2 + l3 + l4 + l5 + l6
 outFile.write(header)
 
-gdal = "C:/OSGeo4W64/bin/gdalwarp.exe" # GDAL location
-proj = '"+proj=utm +zone=16 +datum=NAD83"' # Projection
+gdal = "C:/OSGeo4W64/bin/gdalwarp.exe"  # GDAL location
+proj = '"+proj=utm +zone=16 +datum=NAD83"'  # Projection
 
 for i in files:
     for j in files:
@@ -41,8 +41,10 @@ for i in files:
         rowJ = j[6:9]
         yJ = j[9:13]
         doyJ = j[13:16]
-        if (spI == spJ and yI == yJ and int(rowI) == (int(rowJ)-1) and doyI == doyJ):
-            out_string = gdal + " -t_srs " + proj + " " + str(i) + " " + str(j) + " " + str(i[0:6]) + str(i[9:16]) + "_msc.tif" + "\n"
+        if (spI == spJ and yI == yJ and int(rowI) == (int(rowJ) - 1) and doyI == doyJ):
+            out_string = gdal + " -t_srs " + proj + " " + \
+                str(i) + " " + str(j) + " " + \
+                str(i[0:6]) + str(i[9:16]) + "_msc.tif" + "\n"
             outFile.write(out_string)
 
 footer = "echo Execution complete.\nPause"
