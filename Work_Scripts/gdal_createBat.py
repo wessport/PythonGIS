@@ -31,6 +31,7 @@ outFile.write(header)
 gdal = "C:/OSGeo4W64/bin/gdalwarp.exe"  # GDAL location
 proj = '"+proj=utm +zone=16 +datum=NAD83"'  # Projection
 
+# Grab matching landsat rows, write GDAL arguments
 for i in files:
     for j in files:
         spI = i[0:6]
