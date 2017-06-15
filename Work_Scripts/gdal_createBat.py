@@ -9,7 +9,7 @@
 
 ws = "E:/Wes/Work/USDA/tmp/"
 
-in_file = open(ws + "ndvi_combined.txt", 'r')
+in_file = open(ws + "ND_NDVI_total.txt", 'r')
 files = []
 for line in in_file:
     strFromFile = line.strip()  # Remove line breaks
