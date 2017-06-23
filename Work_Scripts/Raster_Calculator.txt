@@ -12,3 +12,6 @@ OutRas = Con(InList("YMD_Irrigation2002_clip.tif",[1,2,3,5]), 1, -9999)
 
 # If the raster cell has a NoData value, it is assigned -9999
 Con(IsNull("rastercalc4"),-9999,"rastercalc4")
+
+# Set values outside the NDVI index to NULL using boolean operator | - OR
+SetNull(("LC80230362015157.B5.tif" > 1) | ("LC80230362015157.B5.tif" < -1), "LC80230362015157.B5.tif")
