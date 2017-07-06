@@ -8,7 +8,7 @@
 # Define workspace
 ws = "E:/Wes/Work/Rusle2/AnnAGNPS-RUSLE2_Runs/erosionSummary/outlet_July_5_2017"
 
-header = "CELL,SCENARIO,DATE,AVERAGE,MAX,MIN,SUM" + '\n'
+header = "Cell,Scenario,Date,Average,Max,Min,Sum" + '\n'
 
 out_file_an = open((ws + "/aggregated_results_annual.csv"),'w')
 out_file_an.write(header)
