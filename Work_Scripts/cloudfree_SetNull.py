@@ -26,4 +26,8 @@ for i in in_file:
 in_file.close()
 
 for i in mosaic_files:
-    arcpy.gp.SetNull_sa(i, i, out_loc+"/"+i[:-4]+"_null.tif", "VALUE = 0 OR VALUE < -1")
+    arcpy.gp.SetNull_sa(i, i, out_loc+"/"+i[:-4]+"_null.tif", "VALUE = 0 OR VALUE < -1 OR VALUE > 1")
+    arcpy.gp.Float_sa(out_loc+"/"+i[:-4]+"_null.tif", out_loc+"/"+i[:-4]+"_null_flt.tif")
+    
+
+# MAKE SURE TO RUN gdalwarp_createBat.py TO SET NODATA VALUE AS -9999
