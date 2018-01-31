@@ -63,26 +63,22 @@ for ndvi, pixel_qa in img_dictionary.items():
     # Define which pixel values in the pixel_qa band to mask output
     # Arcpy argument must be a string
 
+    # Create temporary binary cloud raster
+    reclass_pixel_qa = arcpy.sa.Reclassify(pixel_qa_loc + pixel_qa, "Value", "66 0;68 1;72 1;96 1;130 0;136 1;160 1;224 1", "DATA")
 
-    # argument = 'SetNull(("{0}"== 224) | ("{0}"== 176) | ("{0}"== 160) | ("{0}"== 144) | ("{0}"== 136) | ("{0}"== 132) | ("{0}"== 112) | ("{0}"== 96) | ("{0}"== 80) | ("{0}"== 72) | ("{0}"== 68), | ("{0}"== 1), "{1}")'.format(pixel_qa, ndvi)
-    #
-    # output_raster = arcpy.sa.RasterCalculator(argument); output_raster.save(out_loc + "{}_masked".format(ndvi))
-
-    reclass_pixel_qa = arcpy.sa.Reclassify(pixel_qa, "Value", "66 0;68 1;72 1;96 1;130 0;136 1;160 1;224 1", "DATA")
-
-    outRas = Con((reclass_pixel_qa == 1) | IsNull(reclass_pixel_qa) | (reclass_pixel_qa == -32768), -9999, ndvi)
+    output_raster = Con((reclass_pixel_qa == 1) | IsNull(reclass_pixel_qa) | (reclass_pixel_qa == -32768), -9999, ndvi_loc + ndvi)
 
     # Set snapRaster
     arcpy.env.snapRaster = reclass_pixel_qa
 
-    arcpy.management.SetRasterProperties(outRas, None, None, None, "1 -9999", None)
-
-    outRas.save(out_loc + "{}_maskedTEST.tif".format("LT05_L1TP_023_19850923_msc"))
-
-    # Can't have more than 6 conditional statements inside one Con function
-    output_raster = Con(((pixel_qa_loc + pixel_qa) == 224) | ((pixel_qa_loc + pixel_qa) == 176) | ((pixel_qa_loc + pixel_qa) == 160) | ((pixel_qa_loc + pixel_qa) == 144) | ((pixel_qa_loc + pixel_qa) == 136) | ((pixel_qa_loc + pixel_qa) == 132) | ((pixel_qa_loc + pixel_qa) == 112) | ((pixel_qa_loc + pixel_qa) == 96) | ((pixel_qa_loc + pixel_qa) == 80) | ((pixel_qa_loc + pixel_qa) == 72) | ((pixel_qa_loc + pixel_qa) == 68) | ((pixel_qa_loc + pixel_qa) == 1), -9999, (ndvi_loc + ndvi))
+    arcpy.management.SetRasterProperties(output_raster, None, None, None, "1 -9999", None)
 
     output_raster.save(out_loc + "{}_masked.tif".format(ndvi[:-4]))
+
+    # Can't have more than 6 conditional statements inside one Con function
+    # output_raster = Con(((pixel_qa_loc + pixel_qa) == 224) | ((pixel_qa_loc + pixel_qa) == 176) | ((pixel_qa_loc + pixel_qa) == 160) | ((pixel_qa_loc + pixel_qa) == 144) | ((pixel_qa_loc + pixel_qa) == 136) | ((pixel_qa_loc + pixel_qa) == 132) | ((pixel_qa_loc + pixel_qa) == 112) | ((pixel_qa_loc + pixel_qa) == 96) | ((pixel_qa_loc + pixel_qa) == 80) | ((pixel_qa_loc + pixel_qa) == 72) | ((pixel_qa_loc + pixel_qa) == 68) | ((pixel_qa_loc + pixel_qa) == 1), -9999, (ndvi_loc + ndvi))
+
+    # output_raster.save(out_loc + "{}_masked.tif".format(ndvi[:-4]))
 
 print("\n TASK COMPLETED:" + now.strftime("%Y-%m-%d %H:%M") + "\n")
 
@@ -90,10 +86,10 @@ print("\n TASK COMPLETED:" + now.strftime("%Y-%m-%d %H:%M") + "\n")
 # pixel_qa_loc = pixel_qa_loc + "/" + "LT05_L1TP_023036_19950615_20160927_01_T1_pixel_qa_prj.tif"
 # ndvi_loc = ndvi_loc + "/" + "LT05_L1TP_023036_19950615_20160927_01_T1_sr_ndvi_prj.tif"
 
-pixel_qa = "Z:/Wes/USDA/Data/Mississippi/MS_NDVI/ESPA_NDVI/unzipped/PIXEL_QA_mosaiced/LT05_L1TP_023_19850923_pixel_qa_msc.tif"
-ndvi = "Z:/Wes/USDA/Data/Mississippi/MS_NDVI/ESPA_NDVI/unzipped/SR_NDVI_mosaiced/LT05_L1TP_023_19850923_msc.tif"
-
-arcpy.CheckOutExtension("spatial")
+# pixel_qa = "Z:/Wes/USDA/Data/Mississippi/MS_NDVI/ESPA_NDVI/unzipped/PIXEL_QA_mosaiced/LT05_L1TP_023_19850923_pixel_qa_msc.tif"
+# ndvi = "Z:/Wes/USDA/Data/Mississippi/MS_NDVI/ESPA_NDVI/unzipped/SR_NDVI_mosaiced/LT05_L1TP_023_19850923_msc.tif"
+#
+# arcpy.CheckOutExtension("spatial")
 #
 # outRas = Con((pixel_qa_loc == 224) | (pixel_qa_loc == 176) , -9999, ndvi_loc)
 #
@@ -101,16 +97,16 @@ arcpy.CheckOutExtension("spatial")
 
 # | (pixel_qa == 160) | (pixel_qa == 144) | (pixel_qa == 136) | (pixel_qa == 132) | (pixel_qa == 112) | (pixel_qa == 96) | (pixel_qa == 80) | (pixel_qa == 72) | (pixel_qa == 68) | (pixel_qa == 1)
 
-reclass_pixel_qa = arcpy.sa.Reclassify(pixel_qa, "Value", "66 0;68 1;72 1;96 1;130 0;136 1;160 1;224 1", "DATA")
-
-outRas = Con((reclass_pixel_qa == 1) | IsNull(reclass_pixel_qa) | (reclass_pixel_qa == -32768), -9999, ndvi)
-
-# Set snapRaster
-arcpy.env.snapRaster = reclass_pixel_qa
-
-arcpy.management.SetRasterProperties(outRas, None, None, None, "1 -9999", None)
-
-outRas.save(out_loc + "{}_maskedTEST.tif".format("LT05_L1TP_023_19850923_msc"))
+# reclass_pixel_qa = arcpy.sa.Reclassify(pixel_qa, "Value", "66 0;68 1;72 1;96 1;130 0;136 1;160 1;224 1", "DATA")
+#
+# outRas = Con((reclass_pixel_qa == 1) | IsNull(reclass_pixel_qa) | (reclass_pixel_qa == -32768), -9999, ndvi)
+#
+# # Set snapRaster
+# arcpy.env.snapRaster = reclass_pixel_qa
+#
+# arcpy.management.SetRasterProperties(outRas, None, None, None, "1 -9999", None)
+#
+# outRas.save(out_loc + "{}_maskedTEST.tif".format("LT05_L1TP_023_19850923_msc"))
 
 arcpy.CheckInExtension("spatial")
 
