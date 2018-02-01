@@ -5,6 +5,7 @@
 # SCRIPT SUMMARY:
 # Working with arcpy to mask clouds from SR_NDVI
 
+import sys, getopt
 import arcpy, arcinfo
 import datetime
 from arcpy.sa import *
@@ -19,9 +20,6 @@ arcpy.env.addOutputsToMap = 0
 
 # Set output Coordianate System to NAD83 UTM Z16
 arcpy.env.outputCoordinateSystem = "PROJCS['NAD_1983_UTM_Zone_16N',GEOGCS['GCS_North_American_1983',DATUM['D_North_American_1983',SPHEROID['GRS_1980',6378137.0,298.257222101]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]],PROJECTION['Transverse_Mercator'],PARAMETER['False_Easting',500000.0],PARAMETER['False_Northing',0.0],PARAMETER['Central_Meridian',-87.0],PARAMETER['Scale_Factor',0.9996],PARAMETER['Latitude_Of_Origin',0.0],UNIT['Meter',1.0]]"
-
-# # Set snapRaster
-# arcpy.env.snapRaster = "Z:/Wes/USDA/Data/Mississippi/MS_NDVI/ESPA_NDVI/unzipped/SR_NDVI_mosaiced/LT05_L1TP_023036_19950615_20160927_01_T1_sr_ndvi_prj.tif"
 
 # Cell Size
 arcpy.env.cellSize = 30.0
@@ -111,3 +109,5 @@ print("\n TASK COMPLETED:" + now.strftime("%Y-%m-%d %H:%M") + "\n")
 arcpy.CheckInExtension("spatial")
 
 arcpy.ResetEnvironments()
+
+if __name__ == '__main__':
