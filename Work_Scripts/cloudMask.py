@@ -116,7 +116,7 @@ def cloud_mask(state):
     # Current system time
     now = datetime.datetime.now()
 
-    elapsed_time = (float(start.strftime("%S")) - float(now.strftime("%S"))) / 60
+    elapsed_time = (float(start_time.strftime("%S")) - float(now.strftime("%S"))) / 60
 
     print("\n TASK COMPLETED:" + now.strftime("%Y-%m-%d %H:%M") + "\n" + "ELAPSED TIME: " + str(elapsed_time) + "\n")
 
