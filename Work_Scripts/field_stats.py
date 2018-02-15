@@ -8,9 +8,12 @@
 
 import sys, os
 import datetime
+import time
 import numpy as np
 import gdal
 # import matplotlib.pyplot as plt
+
+start_time = time.time()
 
 # RASTERIZE FIELD POLYGONS
 # http://www.gdal.org/gdal_rasterize.html
@@ -19,7 +22,7 @@ import gdal
 # Obtained from gdalinfo LT05_L1GS_023_19850110_msc_masked.tif
 
 # GDAL command ran from OSGEO shell
-# gdal_rasterize -a Id -l MS_Agg_Fields_NLCD2001 MS_Agg_Fields_NLCD2001.shp -a_nodata -9999 -te 133088.835 3716769.915 182948.835 3814599.915 -tr 30.0 30.0 -ot int16 MS_Agg_Fields_gdal.tif
+# gdal_rasterize -a Id -l MS_Agg_Fields_NLCD2001_final MS_Agg_Fields_NLCD2001_final.shp -a_nodata -9999 -te 133088.835 3716769.915 182948.835 3814599.915 -tr 30.0 30.0 -ot int16 MS_Agg_Fields_gdal.tif
 
 ################################################################################
 # READ IN RASTER DATA AS ARRAYS
@@ -93,24 +96,24 @@ for field_id in unique_field:
 
         else:
 
-            f_mean = np.mean(f_ndvi_values)
+            f_mean = round(np.mean(f_ndvi_values),4)
             f_max = np.max(f_ndvi_values)
             f_min = np.min(f_ndvi_values)
             f_range = f_max - f_min
-            f_std = np.std(f_ndvi_values)
+            f_std = round(np.std(f_ndvi_values),4)
             f_count = len(f_ndvi_values)
             f_area = (30^2) * f_count
 
         stats[field_id] = f_mean, f_max, f_min, f_range, f_std, f_count, f_area
 
-total_pixels = len(ndvi_array[field_array == 1])
-total_pixels
-test = ndvi_array[np.logical_and(field_array == 1, ndvi_array != -9999)]
-np.mean(test)
-clean_pixels = len(test)
-clean_pixels
-clean_ratio = (float(clean_pixels) / total_pixels)
-clean_ratio
+# total_pixels = len(ndvi_array[field_array == 1])
+# total_pixels
+# test = ndvi_array[np.logical_and(field_array == 1, ndvi_array != -9999)]
+# np.mean(test)
+# clean_pixels = len(test)
+# clean_pixels
+# clean_ratio = (float(clean_pixels) / total_pixels)
+# clean_ratio
 
 # stats[1] = 40, 10, 20
 
@@ -119,4 +122,6 @@ with open('E:/Wes/Work/USDA/raw/Mississippi/MS_NDVI/Field_raster/file.txt', 'w')
     file.write('F_ID,F_AVG,F_MAX,F_MIN,F_RANGE,F_STD,F_COUNT,F_AREA' + '\n')
     for key, value in stats.iteritems():
         out_string = str(key) + ',' + str(value).strip('()').replace(" ", "") + '\n'
-    file.write(out_string)
+        file.write(out_string)
+
+print("--- {} seconds ---".format(round(time.time() - start_time),2))
