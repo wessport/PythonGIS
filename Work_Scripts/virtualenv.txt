@@ -7,7 +7,7 @@
 "C:\Python27\ArcGISx6410.5\Scripts\virtualenv.exe"
 
 # Create a virtual environment for a project:
-"C:\Python27\ArcGISx6410.5\Scripts\virtualenv.exe" my_project
+C:/Python27/ArcGISx6410.5/Scripts/virtualenv.exe E:/Wes/Work/USDA/usda_virutal_env/usda
 
 # To begin using the virtual environment, it needs to be activated:
-my_project/Scripts/activate
+E:/Wes/Work/USDA/usda_virutal_env/usda/Scripts/activate
