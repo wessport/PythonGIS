@@ -11,7 +11,7 @@ import datetime
 import time
 import numpy as np
 import gdal
-# import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 start_time = time.time()
 
@@ -34,9 +34,9 @@ ndvi = gdal.Open(dataset)
 # Create numpy array
 ndvi_array = np.array(ndvi.GetRasterBand(1).ReadAsArray())
 
-ndvi_array.shape
-
-ndvi_array
+# ndvi_array.shape
+#
+# ndvi_array
 
 # TESTING GDAL RASTER
 
@@ -47,10 +47,10 @@ f_gdal = gdal.Open(fr_gdal)
 field_array = np.array(f_gdal.GetRasterBand(1).ReadAsArray())
 
 field_array.shape
+#
+# field_array
 
-field_array
-
-# plt.imshow(field_array)
+#plt.imshow(field_array)
 
 # Export array to textfile
 #np.savetxt('E:/Wes/Work/USDA/raw/Mississippi/MS_NDVI/Field_raster/field.csv', field_array, fmt='%i', delimiter=',')
@@ -60,68 +60,56 @@ field_array
 # Get unique list of field ids
 
 unique_field = np.unique(field_array)
-len(unique_field)
+# len(unique_field)
 # Get rid of no data
 unique_field = unique_field[unique_field != -9999]
-len(unique_field)
-
+# len(unique_field)
+np.savetxt('E:/Wes/Work/USDA/raw/Mississippi/MS_NDVI/Field_raster/unique_field.csv', unique_field, fmt='%s', delimiter=',')
 # Consider optimizing this for performance later
 # https://wiki.python.org/moin/PythonSpeed/PerformanceTips
 
 # Threshold of minimum clean pixels neccessary to calculate stats
 min_clean_ratio = 0.10
 
-stats = {}
+stats = np.zeros((5253,8))
+
 # Calculate stats
+count = 0
 for field_id in unique_field:
+    # Number of pixels in a given field
+    total_pixels = len(ndvi_array[field_array == field_id])
 
-        # Number of pixels in a given field
-        total_pixels = len(ndvi_array[field_array == field_id])
+    # Specify a condition - exclude no data values
+    f_ndvi_values = ndvi_array[np.logical_and(field_array == field_id, ndvi_array != -9999)]
 
-        # Specify a condition - exclude no data values
-        f_ndvi_values = ndvi_array[np.logical_and(field_array == field_id, ndvi_array != -9999)]
+    # Calculate number of clean pixels
+    clean_pixels = len(f_ndvi_values)
+    clean_ratio = (float(clean_pixels)/total_pixels)
 
-        # Calculate number of clean pixels
-        clean_pixels = len(f_ndvi_values)
-        clean_ratio = (float(clean_pixels)/total_pixels)
+    if clean_ratio < min_clean_ratio:
+        f_mean = -9999
+        f_max = -9999
+        f_min = -9999
+        f_range = -9999
+        f_std = -9999
+        f_count = len(f_ndvi_values)
+        f_area = -9999
 
-        if clean_ratio < min_clean_ratio:
-            f_mean = ''
-            f_max = ''
-            f_min = ''
-            f_range = ''
-            f_std = ''
-            f_count = len(f_ndvi_values)
-            f_area = ''
+    else:
 
-        else:
+        f_mean = np.mean(f_ndvi_values)
+        f_max = np.max(f_ndvi_values)
+        f_min = np.min(f_ndvi_values)
+        f_range = f_max - f_min
+        f_std = np.std(f_ndvi_values)
+        f_count = len(f_ndvi_values)
+        f_area = (30**2) * f_count
 
-            f_mean = round(np.mean(f_ndvi_values),4)
-            f_max = np.max(f_ndvi_values)
-            f_min = np.min(f_ndvi_values)
-            f_range = f_max - f_min
-            f_std = round(np.std(f_ndvi_values),4)
-            f_count = len(f_ndvi_values)
-            f_area = (30^2) * f_count
-
-        stats[field_id] = f_mean, f_max, f_min, f_range, f_std, f_count, f_area
-
-# total_pixels = len(ndvi_array[field_array == 1])
-# total_pixels
-# test = ndvi_array[np.logical_and(field_array == 1, ndvi_array != -9999)]
-# np.mean(test)
-# clean_pixels = len(test)
-# clean_pixels
-# clean_ratio = (float(clean_pixels) / total_pixels)
-# clean_ratio
-
-# stats[1] = 40, 10, 20
+        count = count + 1
+    stats[(count)] = field_id, f_mean, f_max, f_min, f_range, f_std, f_count, f_area
 
 # Write stats to file
-with open('E:/Wes/Work/USDA/raw/Mississippi/MS_NDVI/Field_raster/file.txt', 'w') as file:
-    file.write('F_ID,F_AVG,F_MAX,F_MIN,F_RANGE,F_STD,F_COUNT,F_AREA' + '\n')
-    for key, value in stats.iteritems():
-        out_string = str(key) + ',' + str(value).strip('()').replace(" ", "") + '\n'
-        file.write(out_string)
+
+np.savetxt('E:/Wes/Work/USDA/raw/Mississippi/MS_NDVI/Field_raster/stats.csv', stats, fmt='%s', delimiter=',')
 
 print("--- {} seconds ---".format(round(time.time() - start_time),2))
