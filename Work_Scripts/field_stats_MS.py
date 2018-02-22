@@ -22,7 +22,7 @@ start_time = time.time()
 # Obtained from gdalinfo LT05_L1GS_023_19850110_msc_masked.tif
 
 # GDAL command ran from OSGEO shell
-# gdal_rasterize -a Id -l MS_Agg_Fields_NLCD2001_final MS_Agg_Fields_NLCD2001_final.shp -a_nodata -9999 -te 133088.835 3716769.915 182948.835 3814599.915 -tr 30.0 30.0 -ot int16 MS_Agg_Fields_gdal.tif
+# gdal_rasterize -a Id -l MS_Agg_Fields_NLCD2001_final_fixed MS_Agg_Fields_NLCD2001_final_fixed.shp -a_nodata -9999 -te 133088.835 3716769.915 182948.835 3814599.915 -tr 30 30 -ot int16 MS_Agg_Fields_gdal.tif
 
 ################################################################################
 # CALCULATE FIELD STATISTICS
@@ -71,7 +71,7 @@ for year in years:
         fi = field_array[mask]
 
         # Calculate stats
-        num_fields = 5318 + 1
+        num_fields = np.unique(field_array).size
         stats = np.array(range(0,num_fields))
         doys = np.full(stats.shape,doy)
 
