@@ -92,7 +92,7 @@ for year in years:
 
         # palette must be given in sorted order
         n = [-9999]
-        palette = range(0,3519)
+        palette = range(0,num_fields)
         palette = n + palette
 
         # key gives the new values you wish palette to be mapped to.
@@ -112,6 +112,7 @@ for year in years:
         stds = np.sqrt(avgs)
 
         stats = np.column_stack((stats,maxs,mins,ranges,stds,counts,areas))
+        stats = stats[:-1,] #Remove last row -- artifact of using bincount - not a real field
 
         try:
             stats_out = np.append(stats_out,stats, axis = 0)

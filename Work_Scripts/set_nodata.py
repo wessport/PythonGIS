@@ -6,24 +6,29 @@
 # Working with numpy and GDAL to remove ESRI nodata garbage
 # Followed guide @ https://geohackweek.github.io/raster/04-workingwithrasters/
 
-# E:\GitHub\PythonGIS\Work_Scripts\set_nodata.py
+# E:/GitHub/PythonGIS/Work_Scripts/set_nodata.py
 
 import sys, os
-import datetime
+import time
 import numpy as np
-
-from os import listdir
+import glob
+import ntpath
 from osgeo import gdal
 
+start_time = time.time()
 
 # Reclassify ESRI NoData values
 def ndvi_nodata(image):
     '''Replace ESRI NoData values with appropriate NoData value '''
     image[image == -32768] = -9999
+    image[image == 20000] = -9999
+    image[image > 10000] = -9999 # Just to be certain
+    image[image < -10000] = -9999
     return image
 
 def nd_ndvi_nodata(file_name):
     image_loc = file_name
+    image_name = ntpath.basename(image_loc)
 
     # Read in raster using gdal
 
@@ -35,9 +40,9 @@ def nd_ndvi_nodata(file_name):
     ndvi_fixed = ndvi_nodata(ndvi)
 
     # Save the NDVI Raster to Disk
-    out_loc = "E:/Wes/Work/USDA/raw/North_Dakota/ND_NDVI/SR_NDVI_masked_fixed/"
+    out_loc = "E:/Wes/Work/USDA/raw/Mississippi/MS_NDVI/SR_NDVI_masked_fixed/"
     driver = gdal.GetDriverByName('GTiff')
-    new_dataset = driver.Create(out_loc + image_loc,
+    new_dataset = driver.Create(out_loc + image_name,
                                 ds.RasterXSize,    # number of columns
                                 ds.RasterYSize,    # number of rows
                                 1,                 # number of bands
@@ -57,26 +62,13 @@ def nd_ndvi_nodata(file_name):
     del ds
 
 # Create list of file names to correct
-start_time = datetime.datetime.now()
 
-ndvi_loc = "E:/Wes/Work/USDA/raw/North_Dakota/ND_NDVI/SR_NDVI_masked"
-ndvi_list = []
+ndvi_loc = "E:/Wes/Work/USDA/raw/Mississippi/MS_NDVI/SR_NDVI_msc_cloudFree"
+image_list = []
+image_list =  glob.glob(ndvi_loc+"/*.tif")
+image_list.sort()
 
-items = listdir(ndvi_loc)
-for i in items:
-    if i.endswith(".tif"):
-        ndvi_list.append(i)
-ndvi_list.sort()
-
-for i in ndvi_list:
+for i in image_list:
     nd_ndvi_nodata(i)
 
-# Current system time
-now = datetime.datetime.now()
-
-elapsed_time = (float(start_time.strftime("%S")) - float(now.strftime("%S"))) / 60
-
-if elapsed_time < 0:
-    elapsed_time = 0
-
-print("\n TASK COMPLETED:" + now.strftime("%Y-%m-%d %H:%M") + "\n" + "ELAPSED TIME: " + str(elapsed_time) + "\n")
+print("--- {} seconds ---".format(time.time() - start_time))
