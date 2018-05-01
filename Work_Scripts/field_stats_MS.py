@@ -46,7 +46,8 @@ start_time = time.time()
 
 ndvi_loc = "E:/Wes/Work/USDA/raw/Mississippi/MS_NDVI/SR_NDVI_msc_cloudFree"
 
-years = ["1985","1990","1995","2000"]
+#years = ["1985","1990","1995","2000"]
+years = ["2005"]
 for year in years:
     image_list =  glob.glob(ndvi_loc+"/*_{}*_masked.tif".format(year))
 

@@ -34,7 +34,7 @@ def cloud_mask(state):
         arcpy.env.workspace = ws
 
         # Location of sr_ndvi
-        ndvi_loc = "Z:/Wes/USDA/Data/Mississippi/MS_NDVI/ESPA_NDVI/unzipped/SR_NDVI_mosaiced/"
+        ndvi_loc = "Z:/Wes/USDA/Data/Mississippi/MS_NDVI/ESPA_NDVI/unzipped/sr_ndvi_mosaiced_2005/"
 
         # Check to make sure NAS is mapped to Z:/ drive
         if os.path.isdir(ndvi_loc) == False:
@@ -44,10 +44,10 @@ def cloud_mask(state):
                 print("NAS has been succesfully mapped.")
 
         # Location of pixel_qa band
-        pixel_qa_loc = "Z:/Wes/USDA/Data/Mississippi/MS_NDVI/ESPA_NDVI/unzipped/PIXEL_QA_mosaiced/"
+        pixel_qa_loc = "Z:/Wes/USDA/Data/Mississippi/MS_NDVI/ESPA_NDVI/unzipped/PIXEL_QA_mosaiced_2005/"
 
         # Output file location
-        out_loc = "Z:/Wes/USDA/Data/Mississippi/MS_NDVI/ESPA_NDVI/unzipped/SR_NDVI_msc_cloudFree/"
+        out_loc = "Z:/Wes/USDA/Data/Mississippi/MS_NDVI/ESPA_NDVI/unzipped/sr_ndvi_mosaiced_2005/"
 
     elif state == 'ND':
         arcpy.env.outputCoordinateSystem = "PROJCS['NAD_1983_UTM_Zone_14N',GEOGCS['GCS_North_American_1983',DATUM['D_North_American_1983',SPHEROID['GRS_1980',6378137.0,298.257222101]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]],PROJECTION['Transverse_Mercator'],PARAMETER['False_Easting',500000.0],PARAMETER['False_Northing',0.0],PARAMETER['Central_Meridian',-99.0],PARAMETER['Scale_Factor',0.9996],PARAMETER['Latitude_Of_Origin',0.0],UNIT['Meter',1.0]]"
@@ -57,10 +57,12 @@ def cloud_mask(state):
         arcpy.env.workspace = ws
 
         #Location of sr_ndvi
-        ndvi_loc = "Z:/Wes/USDA/Data/North_Dakota/ND_NDVI/ESPA_NDVI/unzipped/SR_NDVI_projected/"
+        #ndvi_loc = "Z:/Wes/USDA/Data/North_Dakota/ND_NDVI/ESPA_NDVI/unzipped/SR_NDVI_projected/"
+        ndvi_loc = "E:/Wes/Work/USDA/raw/North_Dakota/ND_NDVI/tmp/nd_ndvi_2005/"
 
         #Location of pixel_qa band
-        pixel_qa_loc = "Z:/Wes/USDA/Data/North_Dakota/ND_NDVI/ESPA_NDVI/unzipped/PIXEL_QA_projected/"
+        #pixel_qa_loc = "Z:/Wes/USDA/Data/North_Dakota/ND_NDVI/ESPA_NDVI/unzipped/PIXEL_QA_projected/"
+        pixel_qa_loc = "E:/Wes/Work/USDA/raw/North_Dakota/ND_NDVI/tmp/nd_pixel_qa_2005/"
 
         # Output file location
         out_loc = "Z:/Wes/USDA/Data/North_Dakota/ND_NDVI/ESPA_NDVI/unzipped/SR_NDVI_masked/"

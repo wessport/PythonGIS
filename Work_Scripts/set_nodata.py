@@ -40,7 +40,7 @@ def nd_ndvi_nodata(file_name):
     ndvi_fixed = ndvi_nodata(ndvi)
 
     # Save the NDVI Raster to Disk
-    out_loc = "E:/Wes/Work/USDA/raw/Mississippi/MS_NDVI/SR_NDVI_masked_fixed/"
+    out_loc = "E:/Wes/Work/USDA/raw/North_Dakota/ND_NDVI/SR_NDVI_masked_fixed/"
     driver = gdal.GetDriverByName('GTiff')
     new_dataset = driver.Create(out_loc + image_name,
                                 ds.RasterXSize,    # number of columns
@@ -63,7 +63,7 @@ def nd_ndvi_nodata(file_name):
 
 # Create list of file names to correct
 
-ndvi_loc = "E:/Wes/Work/USDA/raw/Mississippi/MS_NDVI/SR_NDVI_msc_cloudFree"
+ndvi_loc = "E:/Wes/Work/USDA/raw/North_Dakota/ND_NDVI/tmp/sr_ndvi_masked_2005"
 image_list = []
 image_list =  glob.glob(ndvi_loc+"/*.tif")
 image_list.sort()

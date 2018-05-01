@@ -11,10 +11,10 @@ now = datetime.datetime.now()
 
 ws = "E:/Wes/Work/USDA/tmp/"
 
-in_file = open(ws + "pixel_qa_files.txt", 'r')
+in_file = open(ws + "MS_2005_request.txt", 'r')
 files = []
 for line in in_file:
-    strFromFile = line.strip()  # Remove line breaks
+    strFromFile = line.strip() +"_pixel_qa_prj.tif"  # Remove line breaks
     files.append(strFromFile)
 
 # Create text file to send formatted string to
@@ -48,7 +48,7 @@ for i in files:
         if (sI == sJ and pI == pJ and dateI == dateJ and int(rowI) == (int(rowJ) - 1)):
             out_string = gdal + " -t_srs " + proj + " " + \
                 str(i) + " " + str(j) + " " + \
-                str(i[0:13]) + str(i[16:25]) + "_pixel_qa_msc.tif" + "\n"
+                str(i[0:13]) + str(i[16:25]) + "_pixel_qa_msc.tif" + "\n" #_pixel_qa_msc
             outFile.write(out_string)
 
 footer = "echo Execution complete.\nPause"
